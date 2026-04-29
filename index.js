@@ -4,6 +4,9 @@ console.log(form);
 const input = document.querySelector(".form-control")
 console.log(input);
 
+const container = document.querySelector(".js-card-container")
+
+
 
 form.addEventListener("submit", onSearchBtn)
 
@@ -15,24 +18,45 @@ function onSearchBtn(e) {
         alert("Enter a Number")
         return 
     }
-}
-
-function fetchPokemonById(params) {
+    fetchPokemonById(id)
+    .then(data => {
+    console.log(data.abilities[0].ability.name);
+    renderPokemon(data)
+})
+.catch(error => {
+    console.log(error);
     
+        alert("Oops, not found")
+})
+.finally(() => {
+    form.reset()
+})
 }
 
-fetch(`${BASEURL}pokemon/ditto`)
+function fetchPokemonById(id) {
+    return fetch(`${BASEURL}pokemon/${id}`)
 .then(resp => {
     if (!resp.ok) {
         throw new Error(resp.status)
     }
     return resp.json()
 })
-.then(data => {
-    console.log(data.abilities[0].ability.name);
-    
-})
-.catch(error => {
-    console.log(error);
-    
-})
+}
+
+function renderPokemon(pokemon) {
+    const markup = `<div class="card">
+            <div class="card-img-top">
+                <img src="${pokemon.sprites.front_default}" alt="${pokemon.name}">
+            </div>
+            <div class="card-body">
+                <h2 class="card-title">Ім'я: ${pokemon.name}</h2>
+                <p class="card-text">Вага: ${pokemon.weight}</p>
+                <p class="card-text">Зріст: ${pokemon.height}</p>
+                <p class="card-text"><b>Вміння</b></p>
+                <ul class="list-group"></ul>
+            </div>
+        </div>`
+        console.log(markup);
+
+        container.innerHTML = markup
+}
